@@ -136,16 +136,16 @@ broker: kafka-broker-2:9092
   > partition: 3
 ```
 
-If the output is to be piped into another process, for example  `grep` to filter for data about a particular node or topic, then run the command in `unattended` mode, as show below:
+If the output is to be piped into another process, for example  `grep` to filter for data about a particular node or topic, then run the command in `unattended` mode, as shown below:
 
 ```bash
-    klient -describe -unattended | grep "kafka-broker-1:9092" # here we pipe the results into grep and filter for a particular broker
+    klient -describe -unattended | grep "kafka-broker-1:9092" # here the results are piped into grep to filter for a particular broker
 ``` 
 
-The output is now in flat, plain text format, ensuring that the results of an action, such as our the example, contain the data from the parent levels in each row:
+The output is now in flat, plain text format, ensuring that the results of an action, such as our the example, contain the data from the parent levels in each row, as shown here in the output of the above command:
 
-```
-broker topic partition
+```bash
+# broker topic partition
 kafka-broker-1:9092 example1 1
 kafka-broker-1:9092 example1 2
 ```
