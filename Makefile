@@ -18,7 +18,7 @@ integration-test :
 	@docker compose down &> /dev/null
 	@printf "stopped\n"
 
-VERSION=1.3.1.`date +%s`
+VERSION=1.3.2.`date +%s`
 build :
 	-@rm -rf ./bin 2> /dev/null
 	-@mkdir ./bin
@@ -36,14 +36,20 @@ help : build
 
 #AUTH=-bootstrappers "kafka-broker-1" -authkey "username" -authsecret "password" -tls -tlsnoverify # the format of the auth string
 AUTH= # anonymous auth string
+#UNATTENDED=-unattended
+UNATTENDED=
 
 describe : build
 	@./bin/klient -describe ${AUTH}
 
+describe-unattended : build
+	@./bin/klient -describe -unattended ${AUTH}
+
 TOPIC="example"
 PARTITIONS="6"
+REPLICAS="1"
 topic: build
-	@./bin/klient -create ${TOPIC} -partitions ${PARTITIONS} ${AUTH}
+	@./bin/klient -create ${TOPIC} -partitions ${PARTITIONS} -replicas ${REPLICAS} ${AUTH}
 
 delete-topic: build
 	@./bin/klient -delete ${TOPIC} ${AUTH}

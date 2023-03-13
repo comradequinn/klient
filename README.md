@@ -23,17 +23,17 @@ Alternatively, the scripts below will download and install `klient` for you; sel
 
 ```bash
 # linux on amd 64: amd64
-sudo rm -f /usr/local/bin/klient 2> /dev/null; sudo curl -L "https://github.com/comradequinn/klient/releases/download/v1.3.1/klient.linux.amd64" -o /usr/local/bin/klient && sudo chmod +x /usr/local/bin/klient
+sudo rm -f /usr/local/bin/klient 2> /dev/null; sudo curl -L "https://github.com/comradequinn/klient/releases/download/v1.3.2/klient.linux.amd64" -o /usr/local/bin/klient && sudo chmod +x /usr/local/bin/klient
 ```
 
 ```bash
 # macOS on apple silicon: arm64
-sudo rm -f /usr/local/bin/klient 2> /dev/null; sudo curl -L "https://github.com/comradequinn/klient/releases/download/v1.3.1/klient.darwin.arm64" -o /usr/local/bin/klient && sudo chmod +x /usr/local/bin/klient
+sudo rm -f /usr/local/bin/klient 2> /dev/null; sudo curl -L "https://github.com/comradequinn/klient/releases/download/v1.3.2/klient.darwin.arm64" -o /usr/local/bin/klient && sudo chmod +x /usr/local/bin/klient
 ```
 
 ```bash
 # macOS on intel silicon: amd64
-sudo rm -f /usr/local/bin/klient 2> /dev/null; sudo curl -L "https://github.com/comradequinn/klient/releases/download/v1.3.1/klient.darwin.amd64" -o /usr/local/bin/klient && sudo chmod +x /usr/local/bin/klient
+sudo rm -f /usr/local/bin/klient 2> /dev/null; sudo curl -L "https://github.com/comradequinn/klient/releases/download/v1.3.2/klient.darwin.amd64" -o /usr/local/bin/klient && sudo chmod +x /usr/local/bin/klient
 ```
 
 ## From Source
@@ -136,7 +136,22 @@ broker: kafka-broker-2:9092
   > partition: 3
 ```
 
+If the output is to be piped into another process, for example  `grep` to filter for data about a particular node or topic, then run the command in `unattended` mode, as show below:
+
+```bash
+    klient -describe -unattended | grep "kafka-broker-1:9092" # here we pipe the results into grep and filter for a particular broker
+``` 
+
+The output is now in flat, plain text format, ensuring that the results of an action, such as our the example, contain the data from the parent levels in each row:
+
+```
+broker topic partition
+kafka-broker-1:9092 example1 1
+kafka-broker-1:9092 example1 2
+```
+
 Note, brokers not acting as leader for any partition are not shown.
+
 
 ##  Topic Creation
 To create a topic using the default replication factor and partition count, run the below:

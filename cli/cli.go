@@ -74,12 +74,25 @@ func (c *CLI) DeleteTopic(k KafkaTopicDeleter, topic string) error {
 	return nil
 }
 
-func (c *CLI) Describe(k KafkaDescriber) error {
+func (c *CLI) Describe(k KafkaDescriber, unattended bool) error {
 	brokers, err := k.Describe()
 
 	if err != nil {
 		c.writeFunc("unable to describe cluster using bootstrappers: '%v'. ensure the cluster is online and the bootstrappers are accesible", strings.Join(k.Bootstrappers(), ","))
 		return err
+	}
+
+	if unattended {
+		c.writeFunc("broker topic partition\n")
+
+		for host, broker := range brokers {
+			for name, topic := range broker.Topics {
+				for id := range topic.Partitions {
+					c.writeFunc("%v:%v %v %v\n", host, broker.Port, name, id)
+				}
+			}
+		}
+		return nil
 	}
 
 	c.writeFunc("describing cluster using bootstrappers: '%v'\n\n", strings.Join(k.Bootstrappers(), ","))

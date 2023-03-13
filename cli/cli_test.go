@@ -145,29 +145,33 @@ func (f KakfaDescriberMock) Bootstrappers() []string {
 }
 
 func TestDescriber(t *testing.T) {
-	cli, sb := New(dateFormat), strings.Builder{}
-	cli.writeFunc = sbWriter(&sb)
-
 	host, port, topic, partition := "testhost", 9092, "test-topic", 0
 
-	brokers := map[string]*kafka.Broker{
-		host: {
-			Host: host,
-			Port: port,
-			Topics: map[string]*kafka.Topic{
-				topic: {
-					Name: topic,
-					Partitions: map[int]*kafka.Partition{
-						partition: {
-							ID: partition,
-						}}}}},
+	act := func(unattended bool) string {
+		cli, sb := New(dateFormat), strings.Builder{}
+		cli.writeFunc = sbWriter(&sb)
+
+		brokers := map[string]*kafka.Broker{
+			host: {
+				Host: host,
+				Port: port,
+				Topics: map[string]*kafka.Topic{
+					topic: {
+						Name: topic,
+						Partitions: map[int]*kafka.Partition{
+							partition: {
+								ID: partition,
+							}}}}},
+		}
+
+		cli.Describe(KakfaDescriberMock(func() (map[string]*kafka.Broker, error) {
+			return brokers, nil
+		}), unattended)
+
+		return sb.String()
 	}
 
-	cli.Describe(KakfaDescriberMock(func() (map[string]*kafka.Broker, error) {
-		return brokers, nil
-	}))
-
-	output := sb.String()
+	output := act(false)
 
 	if !strings.Contains(output, fmt.Sprintf("describing cluster using bootstrappers: '%v'", host)) {
 		t.Fatalf("expected output to contain host %v. got %v", host, output)
@@ -180,6 +184,20 @@ func TestDescriber(t *testing.T) {
 		t.Fatalf("expected output to contain topic %v. got %v", topic, output)
 	}
 	if !strings.Contains(output, fmt.Sprintf("partition: %v", partition)) {
+		t.Fatalf("expected output to contain partition %v. got %v", partition, output)
+	}
+
+	output = act(true)
+
+	if !strings.Contains(output, fmt.Sprintf("%v:%v", host, port)) {
+		t.Fatalf("expected output to contain host %v and port %v. got %v", host, port, output)
+	}
+
+	if !strings.Contains(output, fmt.Sprintf("%v", topic)) {
+		t.Fatalf("expected output to contain topic %v. got %v", topic, output)
+	}
+
+	if !strings.Contains(output, fmt.Sprintf("%v", partition)) {
 		t.Fatalf("expected output to contain partition %v. got %v", partition, output)
 	}
 }

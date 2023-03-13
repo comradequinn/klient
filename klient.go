@@ -33,7 +33,7 @@ func main() {
 	)
 
 	var ( // topic io flags
-		unattended = flag.Bool("unattended", false, "run in an unattended-compatible manner when reading or writing to or from topics. use this flag when stdin/out is non-interactive (eg piped/redirected to/from another command)")
+		unattended = flag.Bool("unattended", false, "run in an unattended-compatible manner when reading or writing to or from topics or describing a cluster. use this flag when stdin/out is non-interactive (eg piped/redirected to/from another command)")
 		delimiter  = flag.String("delimiter", "\n", "the message and key delimiter to use instead of (the default) 'new line' on data read/written to/from stdio when in -read or -write mode with -unattended specified: must be a single byte value")
 	)
 
@@ -127,7 +127,7 @@ func main() {
 
 	switch {
 	case *describe:
-		if err = cli.Describe(k); err != nil {
+		if err = cli.Describe(k, *unattended); err != nil {
 			log.Fatalf("error describing cluster using bootstrappers of [%v]: %v\n", *bootstrappers, err)
 		}
 	case *create != "":
