@@ -238,7 +238,7 @@ The example below shows how to pipe data from a new-line delimited, `input.json`
 cat input.json | klient -write "my-topic" -unattended 
 ```
 
-The input file may also specify a key to assign to each value. The example below shows how to specify a key and also how to use a non-new-line delimiter, in the case `|`:
+The input file may also specify a key to assign to each value. The example below shows how to specify a key and also how to use a non-new-line delimiter, in this case `|`:
 
 ```
 // file: input.json, the k# values are the keys
@@ -295,7 +295,7 @@ klient -range-read "my-topic" -partition 1 -offset-from 10
 
 ```bash
 # read all messages in partition 0 between offset 10 and 20, then terminate
-klient -range-read "my-topic" -offset-from 10 -offset-from 20
+klient -range-read "my-topic" -offset-from 10 -offset-to 20
 ```
 
 ### Specifying a Partition & Time Range
