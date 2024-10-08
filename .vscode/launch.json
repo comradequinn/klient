@@ -8,7 +8,7 @@
             "mode": "auto",
             "program": "${workspaceFolder}/klient.go",
             "env": {},
-            "args": ["-read-range", "example", "-offset-from", "0", "-offset-to", "2"]
+            "args": ["-r", "example-topic"]
         },
         {
             "name": "Attach",
