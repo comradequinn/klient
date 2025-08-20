@@ -10,11 +10,17 @@ import (
 	"github.com/comradequinn/klient/kafio"
 )
 
+var (
+	commit = "dev-build"
+	tag    = "v0.0.0-dev.0"
+)
+
 func main() {
 	log.SetFlags(0)
 	log.SetOutput(os.Stdout)
 
 	var (
+		versionArg                 = flag.Bool("version", false, "print klient version")
 		bootstrappersArg           = flag.String("b", "localhost:9092", "the comma separated list of kafka bootstrappers to use to connect")
 		writeTopicArg              = flag.String("w", "", "the topic to write to")
 		writeTopicHeadersArg       = flag.String("h", "", "the comma separated set of 'key=value' formatted headers to use when writing to a topic. eg \"k1=v1,k2=v2\"")
@@ -32,6 +38,11 @@ func main() {
 	)
 
 	flag.Parse()
+
+	if *versionArg {
+		log.Printf("klient version %v (commit %v)\n", tag, commit)
+		os.Exit(0)
+	}
 
 	bootstrappers := strings.Split(*bootstrappersArg, ",")
 

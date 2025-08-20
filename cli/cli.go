@@ -29,7 +29,7 @@ var (
 	writerFunc WriterFunc
 )
 
-// generate me a unit test for this 
+// generate me a unit test for this
 func Init(k KafkaReaderWriter, wf WriterFunc) {
 	kafka = k
 	writerFunc = wf
