@@ -19,7 +19,7 @@ type (
 		NewTopic(name string, partitions int, replicas int) error
 		ReadTopic(name string, all bool) (string, iter.Seq[kafio.ReadResult])
 		TopicExists(name string) (bool, error)
-		Topics() (map[string]int, error)
+		Topics() (map[string]kafio.Topic, error)
 		WriteTopic(name string, key string, value string, headers map[string]string) error
 	}
 )
@@ -29,7 +29,6 @@ var (
 	writerFunc WriterFunc
 )
 
-// generate me a unit test for this
 func Init(k KafkaReaderWriter, wf WriterFunc) {
 	kafka = k
 	writerFunc = wf
@@ -50,11 +49,10 @@ func Info() error {
 
 	slices.Sort(sortedTopics)
 
-	writerFunc("%-50v %v\n", "NAME", "PARTITIONS")
+	writerFunc("%-60v %-15v %-15v %-15v %-30v\n", "NAME", "PARTITIONS", "REPLICAS", "LEADER ID", "LEADER ADDRESS")
 
 	for _, topic := range sortedTopics {
-		partitions := topics[topic]
-		writerFunc("%-50v %v\n", topic, partitions)
+		writerFunc("%-60v %-15v %-15v %-15v %-30v\n", topic, topics[topic].Partitions, topics[topic].Replicas, topics[topic].Leader.ID, fmt.Sprintf("%v:%v", topics[topic].Leader.Host, topics[topic].Leader.Port))
 	}
 
 	return nil

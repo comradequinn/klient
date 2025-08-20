@@ -64,11 +64,10 @@ klient -i -b "localhost:9092"
 The resulting output would be of the format below:
 
 ```text
-NAME                                               PARTITIONS
-example-topic-1                                    3
-example-topic-2                                    2
-example-topic-3                                    4
-example-topic-4                                    8
+NAME                                                         PARTITIONS      REPLICAS        LEADER ID       LEADER ADDRESS                
+example-topic-1                                              4               1               1               localhost:9092
+example-topic-2                                              8               3               2               localhost:9093
+example-topic-3                                              4               1               1               localhost:9094
 ```
 
 ##  Topic Creation

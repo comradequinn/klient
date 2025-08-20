@@ -86,6 +86,7 @@ assert_contains "NAME" "$TEST_RESULT"
 assert_contains "PARTITIONS" "$TEST_RESULT"
 assert_contains "${TEST_TOPIC}" "$TEST_RESULT"
 assert_contains "${TEST_TOPIC_REPLICAS}" "$TEST_RESULT"
+assert_contains "localhost:9092" "$TEST_RESULT"
 assert_line_count "2" "$TEST_RESULT"
 printf "%s\n\n" "- OK"
 

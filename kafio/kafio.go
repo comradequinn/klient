@@ -32,6 +32,16 @@ type (
 		Message Message
 		Err     error
 	}
+	Topic struct {
+		Partitions int
+		Replicas   int
+		Leader     Leader
+	}
+	Leader struct {
+		ID   int
+		Host string
+		Port int
+	}
 )
 
 var (
@@ -77,17 +87,23 @@ func Connect(bootstrappers []string) (*Connection, error) {
 
 // Topics returns a map keyed on the cluster's topics with
 // the value being the partition count
-func (conn *Connection) Topics() (map[string]int, error) {
+func (conn *Connection) Topics() (map[string]Topic, error) {
 	partitions, err := conn.driver.ReadPartitions()
 
 	if err != nil {
 		return nil, fmt.Errorf("error reading cluster info. %v", err)
 	}
 
-	topics := map[string]int{}
+	topics := map[string]Topic{}
 
 	for _, p := range partitions {
-		topics[p.Topic]++
+		topic := topics[p.Topic]
+		topic.Partitions++
+		topic.Replicas = len(p.Replicas)
+		topic.Leader.ID = p.Leader.ID
+		topic.Leader.Host = p.Leader.Host
+		topic.Leader.Port = p.Leader.Port
+		topics[p.Topic] = topic
 	}
 
 	return topics, nil
@@ -96,7 +112,7 @@ func (conn *Connection) Topics() (map[string]int, error) {
 // TopicExists returns whether the named topic exists on the current cluster
 func (conn *Connection) TopicExists(name string) (bool, error) {
 	var (
-		topics map[string]int
+		topics map[string]Topic
 		err    error
 	)
 
