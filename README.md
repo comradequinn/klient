@@ -10,20 +10,14 @@ The `klient` utility exposes simplifed kafka cluster administration operations f
 
 ## Installation
 
-If `go` is available on the machine, `klient` can be installed quickly by running the below.
-
-```bash
-go install github.com/comradequinn/klient
-```
-
-Alternatively, there is a `amd64/linux` binary in this repo's `/bin` directory. Copy this repo to a location in your `$PATH` variable and grant it execute permissions.
+Installation instructions are available [here](./INSTALL.md)
 
 ### Local Kafka Broker
 
 The `Makefile` contains a convenience target to spin up a local `kafka broker` which will be available at `localhost:9092`, as shown below.
 
 ```bash
-make local-kafka
+make start-kafka
 ```
 
 The broker can be stopped by running the below
@@ -95,7 +89,7 @@ Alternatively, specify these attributes as required:
 
 ```bash
 # specify a partition count of 3 and a replication factor of 1
-klient -c "my-topic" -p 3 -r 1 -b "localhost:9092"
+klient -c "my-topic" -p 3 -n 1 -b "localhost:9092"
 ``` 
 
 ##  Topic Deletion

@@ -4,10 +4,10 @@ build :
 	@CGO_ENABLED=0;go build -o bin/klient
 
 stop-kafka:
-	-@docker rm -f kafka-broker 2> /dev/null
+	-@podman container rm -f kafka-broker
 
-local-kafka: stop-kafka
-	@docker run -d -p 9092:9092 --rm --name kafka-broker apache/kafka:latest
+start-kafka: stop-kafka
+	@podman container run -d -p 9092:9092 --rm --name kafka-broker docker.io/apache/kafka:latest
 
 BOOTSTRAPPERS="localhost:9092"
 info : build

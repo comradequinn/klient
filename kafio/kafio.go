@@ -17,7 +17,7 @@ import (
 
 type (
 	Connection struct {
-		controller    *kafka.Conn
+		driver        *kafka.Conn
 		bootstrappers []string
 	}
 	Message struct {
@@ -53,7 +53,7 @@ func Connect(bootstrappers []string) (*Connection, error) {
 	)
 
 	for _, bs := range bootstrappers {
-		if connection.controller, err = kafka.Dial("tcp", bs); err != nil {
+		if connection.driver, err = kafka.Dial("tcp", bs); err != nil {
 			log.Printf("error connecting to bootstrapper [%v]: %v", bs, err)
 			continue
 		}
@@ -64,11 +64,11 @@ func Connect(bootstrappers []string) (*Connection, error) {
 		return nil, fmt.Errorf("unable to connect to any of the specified bootstrappers [%+v]: %v", bootstrappers, err)
 	}
 
-	if controllerBroker, err = connection.controller.Controller(); err != nil {
+	if controllerBroker, err = connection.driver.Controller(); err != nil {
 		return nil, fmt.Errorf("unable to ascertain the cluster controller: %v", err)
 	}
 
-	if connection.controller, err = kafka.Dial("tcp", net.JoinHostPort(controllerBroker.Host, strconv.Itoa(controllerBroker.Port))); err != nil {
+	if connection.driver, err = kafka.Dial("tcp", net.JoinHostPort(controllerBroker.Host, strconv.Itoa(controllerBroker.Port))); err != nil {
 		return nil, fmt.Errorf("unable to connect to the cluster controller: %v", err)
 	}
 
@@ -78,7 +78,7 @@ func Connect(bootstrappers []string) (*Connection, error) {
 // Topics returns a map keyed on the cluster's topics with
 // the value being the partition count
 func (conn *Connection) Topics() (map[string]int, error) {
-	partitions, err := conn.controller.ReadPartitions()
+	partitions, err := conn.driver.ReadPartitions()
 
 	if err != nil {
 		return nil, fmt.Errorf("error reading cluster info. %v", err)
@@ -119,7 +119,7 @@ func (conn *Connection) NewTopic(name string, partitions, replicas int) error {
 		return err
 	}
 
-	err := conn.controller.CreateTopics(kafka.TopicConfig{
+	err := conn.driver.CreateTopics(kafka.TopicConfig{
 		Topic:             name,
 		NumPartitions:     partitions,
 		ReplicationFactor: replicas})
@@ -144,7 +144,7 @@ func (conn *Connection) DeleteTopic(name string) error {
 		return fmt.Errorf("cannot delete topic. topic does not exist")
 	}
 
-	if err := conn.controller.DeleteTopics(name); err != nil {
+	if err := conn.driver.DeleteTopics(name); err != nil {
 		return fmt.Errorf("unable to delete topic. %v", name)
 	}
 

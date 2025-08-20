@@ -1,0 +1,67 @@
+name: CD
+
+on:
+  push:
+    tags: [ "v*.*.*" ]
+
+permissions:
+  contents: write
+
+env:
+  CGO_ENABLED: 0 
+  APP: ${{ github.event.repository.name }}
+  VERSION: ${{ github.ref_name }}
+
+jobs:
+  build:
+    name: Build and package
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup go
+      uses: actions/setup-go@v3.5.0
+      with:
+        go-version: 1.24 
+    - name: Clone repo
+      uses: actions/checkout@v3
+    - name: Build and package (linux/amd64)
+      run: |
+        GOOS=linux GOARCH=amd64 go build -ldflags="-X 'main.commit=${{ github.sha }}' -X 'main.tag=${{ env.VERSION }}'" -o build/linux-amd64/${{ env.APP }}
+        tar -czvf build/${{ env.APP }}-${{ env.VERSION }}-linux-amd64.tar.gz -C build/linux-amd64 ${{ env.APP }}
+    - name: Build and package (darwin/amd64)
+      run: |
+        GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'main.commit=${{ github.sha }}' -X 'main.tag=${{ env.VERSION }}'" -o build/darwin-amd64/${{ env.APP }}
+        tar -czvf build/${{ env.APP }}-${{ env.VERSION }}-darwin-amd64.tar.gz -C build/darwin-amd64 ${{ env.APP }}
+    - name: Build and package (darwin/arm64)
+      run: |
+        GOOS=darwin GOARCH=arm64 go build -ldflags="-X 'main.commit=${{ github.sha }}' -X 'main.tag=${{ env.VERSION }}'" -o build/darwin-arm64/${{ env.APP }} 
+        tar -czvf build/${{ env.APP }}-${{ env.VERSION }}-darwin-arm64.tar.gz -C build/darwin-arm64 ${{ env.APP }}
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4 
+      with:
+        name: build-artifacts
+        if-no-files-found: error
+        path: build/*.tar.gz
+        retention-days: 1
+        overwrite: true
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4 
+      with:
+        name: build-artifacts
+        path: build
+    - name: Create release
+      id: create_release
+      if: github.ref_type == 'tag'
+      uses: softprops/action-gh-release@v2 
+      with:
+        files: | 
+          build/${{ env.APP }}-${{ env.VERSION }}-linux-amd64.tar.gz
+          build/${{ env.APP }}-${{ env.VERSION }}-darwin-amd64.tar.gz
+          build/${{ env.APP }}-${{ env.VERSION }}-darwin-arm64.tar.gz
+    - name: Report
+      run: | 
+        echo "release url: ${{ steps.create_release.outputs.url }}"
