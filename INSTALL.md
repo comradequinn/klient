@@ -11,5 +11,5 @@ Alternatively, you can install `klient` by downloading the appropriate tarball f
 Optionally, `linux` users can have the below script quickly do this for them.
 
 ```bash
-export VERSION="v1.3.0"; export OS="linux-amd64"; wget "https://github.com/comradequinn/klient/releases/download/${VERSION}/klient-${VERSION}-${OS}.tar.gz" && tar -xf "klient-${VERSION}-${OS}.tar.gz" && rm -f "klient-${VERSION}-${OS}.tar.gz" && chmod +x klient && sudo mv klient /usr/local/bin/
+export VERSION="v1.3.1"; export OS="linux-amd64"; wget "https://github.com/comradequinn/klient/releases/download/${VERSION}/klient-${VERSION}-${OS}.tar.gz" && tar -xf "klient-${VERSION}-${OS}.tar.gz" && rm -f "klient-${VERSION}-${OS}.tar.gz" && chmod +x klient && sudo mv klient /usr/local/bin/
 ```
